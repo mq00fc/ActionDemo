@@ -1,6 +1,9 @@
 name: AOT Compilation and Release
 
-on: push
+on:
+  push:
+    tags:
+      - 'v*'
 
 jobs:
   build:
@@ -24,7 +27,6 @@ jobs:
 
     - name: Build with AOT
       run: |
-        export PATH="/usr/bin/aarch64-linux-gnu-gcc:$PATH"
         dotnet publish -c Release -r ${{ matrix.runtime }} --self-contained -o out/${{ matrix.runtime }} -p:UseAppHost=true
       env:
         DOTNET_CLI_TELEMETRY_OPTOUT: 1
@@ -44,14 +46,20 @@ jobs:
         with:
           path: out
 
+      - name: Extract tag name
+        id: get_tag
+        run: echo "::set-output name=tag::${GITHUB_REF#refs/tags/}"
+        env:
+          GITHUB_REF: ${{ github.ref }}
+
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.MY_TOKEN }}
         with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
+          tag_name: ${{ steps.get_tag.outputs.tag }}
+          release_name: Release ${{ steps.get_tag.outputs.tag }}
           draft: false
           prerelease: false
 
@@ -61,7 +69,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.MY_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: out/linux-x64/ConsoleApp1  # 确保这里是正确的文件名和路径
+          asset_path: out/linux-x64/ConsoleApp1
           asset_name: ConsoleApp1-linux-x64
           asset_content_type: application/octet-stream
 
@@ -71,6 +79,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.MY_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: out/osx-x64/ConsoleApp1  # 确保这里是正确的文件名和路径
+          asset_path: out/osx-x64/ConsoleApp1
           asset_name: ConsoleApp1-osx-x64
           asset_content_type: application/octet-stream
