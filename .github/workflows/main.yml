@@ -12,6 +12,8 @@ jobs:
             runtime: linux-x64
           - os: ubuntu-latest
             runtime: linux-arm64
+          - os: windows-latest
+            runtime: win-x64
 
     steps:
     - name: Checkout code
@@ -22,22 +24,19 @@ jobs:
       with:
         dotnet-version: '8.0.x'
 
-    - name: Install ARM64 toolchain and libraries
+    - name: Install Dependencies for ARM64
+      if: matrix.runtime == 'linux-arm64'
       run: |
         sudo apt-get update
         sudo apt-get install -y gcc-aarch64-linux-gnu g++-aarch64-linux-gnu binutils-aarch64-linux-gnu
         sudo apt-get install -y libc6-dev-arm64-cross zlib1g-dev liblzma-dev libpthread-stubs0-dev librtmp-dev
-      if: matrix.runtime == 'linux-arm64'
 
-    - name: Build with AOT for Linux ARM64
+    - name: Build with AOT
       run: |
         export PATH="/usr/bin/aarch64-linux-gnu-gcc:$PATH"
         dotnet publish -c Release -r ${{ matrix.runtime }} --self-contained -o out/${{ matrix.runtime }} -p:UseAppHost=true
-      if: matrix.runtime == 'linux-arm64'
-
-    - name: Build with AOT for other runtimes
-      run: dotnet publish -c Release -r ${{ matrix.runtime }} --self-contained -o out/${{ matrix.runtime }}
-      if: matrix.runtime != 'linux-arm64'
+      env:
+        DOTNET_CLI_TELEMETRY_OPTOUT: 1
 
     - name: Upload Artifacts
       uses: actions/upload-artifact@v3
