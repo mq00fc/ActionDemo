@@ -29,9 +29,12 @@ jobs:
       with:
         dotnet-version: '8.0.x'
 
-    - name: Set up QEMU and build in Docker for linux-arm64
+    - name: Set up QEMU
       if: matrix.runtime == 'linux-arm64'
       uses: docker/setup-qemu-action@v3
+
+    - name: Build in Docker for linux-arm64
+      if: matrix.runtime == 'linux-arm64'
       run: |
         docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
         docker build -t myapp-${{ matrix.runtime }} .
