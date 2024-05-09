@@ -39,6 +39,6 @@ jobs:
       shell: bash
       
     - name: Upload
-        uses: softprops/action-gh-release@v2
-        with:
-          files: out/*
+      uses: softprops/action-gh-release@v2
+      with:
+        files: out/*
