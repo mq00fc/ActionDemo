@@ -41,7 +41,7 @@ jobs:
     - name: Upload Artifacts
       uses: actions/upload-artifact@v3
       with:
-        name: ${{ matrix.runtime }}-build
+        name: ${{ matrix.runtime }}.zip
         path: out/${{ matrix.runtime }}.zip
 
   release:
