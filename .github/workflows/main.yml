@@ -34,3 +34,43 @@ jobs:
       with:
         name: ${{ matrix.runtime }}-build
         path: out/${{ matrix.runtime }}
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v3
+        with:
+          path: out
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: false
+
+      - name: Upload Release Asset for Linux x64
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: out/linux-x64/ConsoleApp1 
+        asset_name: ConsoleApp1-linux-x64 
+        asset_content_type: application/octet-stream
+
+      - name: Upload Release Asset for macOS x64
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: out/osx-x64/ConsoleApp1 
+          asset_name: ConsoleApp1-osx-x64
+          asset_content_type: application/octet-stream
