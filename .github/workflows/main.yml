@@ -13,7 +13,7 @@ jobs:
           - os: ubuntu-latest
             runtime: linux-arm64
           - os: windows-latest
-            runtime: windows-x64
+            runtime: win-x64
 
     steps:
     - name: Checkout code
