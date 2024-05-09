@@ -17,8 +17,6 @@ jobs:
             runtime: osx-x64
           - os: windows-latest
             runtime: win-x64
-          - os: ubuntu-latest
-            runtime: linux-arm64
 
     steps:
     - name: Checkout code
@@ -28,22 +26,11 @@ jobs:
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: '8.0.x'
-
-    - name: Build with Docker for linux-arm64
-      if: matrix.runtime == 'linux-arm64'
-      uses: docker/setup-qemu-action@v3
-      run: |
-        docker build -t myapp-${{ matrix.runtime }} -f Dockerfile.${{ matrix.runtime }} .
-        docker run --rm -v "$(pwd)/out/${{ matrix.runtime }}:/app/out" myapp-${{ matrix.runtime }}
-      timeout-minutes: 20 
-      env:
-        DOTNET_CLI_TELEMETRY_OPTOUT: 1
-
-    - name: Build with AOT for non-arm64
-      if: matrix.runtime != 'linux-arm64'
+        
+    - name: Build with AOT
       run: |
         dotnet publish -c Release -r ${{ matrix.runtime }} --self-contained -o out/${{ matrix.runtime }} -p:UseAppHost=true
-      timeout-minutes: 10
+      timeout-minutes: 10 
       env:
         DOTNET_CLI_TELEMETRY_OPTOUT: 1
         
@@ -59,6 +46,7 @@ jobs:
       timeout-minutes: 5
       shell: pwsh
 
+      
     - name: Upload
       uses: softprops/action-gh-release@v2
       env:
