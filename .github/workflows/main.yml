@@ -35,7 +35,7 @@ jobs:
       run: |
         cd out/${{ matrix.runtime }}
         zip -r ../${{ matrix.runtime }}.zip .
-        ls -l
+        ls
       shell: bash
 
     - name: Upload Artifacts
