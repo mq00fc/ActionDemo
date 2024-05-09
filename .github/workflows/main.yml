@@ -1,7 +1,3 @@
-name: AOT Compilation and Release
-
-on: push
-
 jobs:
   build:
     runs-on: ${{ matrix.os }}
@@ -24,67 +20,16 @@ jobs:
       with:
         dotnet-version: '8.0.x'
 
-    - name: Install ARM64 toolchain
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y binutils-aarch64-linux-gnu
-      if: matrix.runtime == 'linux-arm64'
+    - name: Build with AOT for Windows
+      run: dotnet publish -c Release -r ${{ matrix.runtime }} --self-contained -o out/${{ matrix.runtime }} -v Detailed
+      if: matrix.runtime == 'win-x64'
 
-    - name: Build with AOT
+    - name: Build with AOT for Linux
       run: dotnet publish -c Release -r ${{ matrix.runtime }} --self-contained -o out/${{ matrix.runtime }}
+      if: matrix.runtime != 'win-x64'
 
     - name: Upload Artifacts
       uses: actions/upload-artifact@v3
       with:
         name: ${{ matrix.runtime }}-build
         path: out/${{ matrix.runtime }}
-
-  release:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-    - name: Download all artifacts
-      uses: actions/download-artifact@v3
-      with:
-        path: out
-
-    - name: Create Release
-      id: create_release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: ${{ github.ref }}
-        release_name: Release ${{ github.ref }}
-        draft: false
-        prerelease: false
-
-    - name: Upload Release Assets
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: out/linux-x64.zip
-        asset_name: linux-x64.zip
-        asset_content_type: application/zip
-
-    - name: Upload Release Assets
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: out/linux-arm64.zip
-        asset_name: linux-arm64.zip
-        asset_content_type: application/zip
-
-    - name: Upload Release Assets
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: out/windows-x64.zip
-        asset_name: windows-x64.zip
-        asset_content_type: application/zip
