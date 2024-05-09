@@ -69,6 +69,9 @@ jobs:
           release_name: Release ${{ steps.get_tag.outputs.tag }}
           draft: false
           prerelease: false
+          
+      - name: List contents of out directory
+        run: ls out/
 
       - name: Upload Release Asset for Linux x64
         uses: actions/upload-release-asset@v1
