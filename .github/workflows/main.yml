@@ -37,59 +37,8 @@ jobs:
         zip -r ../${{ matrix.runtime }}.zip .
         ls
       shell: bash
-
-    - name: Upload Artifacts
-      uses: actions/upload-artifact@v3
-      with:
-        name: ${{ matrix.runtime }}.zip
-        path: out/${{ matrix.runtime }}.zip
-
-  release:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Download all artifacts
-        uses: actions/download-artifact@v3
+      
+    - name: Upload
+        uses: softprops/action-gh-release@v2
         with:
-          path: out
-
-      - name: Extract tag name
-        id: get_tag
-        run: echo "::set-output name=tag::${GITHUB_REF#refs/tags/}"
-        env:
-          GITHUB_REF: ${{ github.ref }}
-
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.MY_TOKEN }}
-        with:
-          tag_name: ${{ steps.get_tag.outputs.tag }}
-          release_name: Release ${{ steps.get_tag.outputs.tag }}
-          draft: false
-          prerelease: false
-          
-      - name: List contents of out directory
-        run: ls out/
-
-      - name: Upload Release Asset for Linux x64
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.MY_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: out/linux-x64.zip
-          asset_name: linux-x64.zip
-          asset_content_type: application/zip
-
-      - name: Upload Release Asset for macOS x64
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.MY_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: out/osx-x64.zip
-          asset_name: osx-x64.zip
-          asset_content_type: application/zip
-
+          files: out/*
