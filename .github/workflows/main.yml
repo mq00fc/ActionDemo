@@ -1,3 +1,7 @@
+name: AOT Compilation and Release
+
+on: push
+
 jobs:
   build:
     runs-on: ${{ matrix.os }}
