@@ -40,5 +40,7 @@ jobs:
       
     - name: Upload
       uses: softprops/action-gh-release@v2
+      env:
+        GITHUB_TOKEN: ${{ secrets.MY_TOKEN }}  # 使用 GitHub 仓库中的令牌
       with:
         files: out/*
