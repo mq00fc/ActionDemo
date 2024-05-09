@@ -4,7 +4,7 @@
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello, World!121");
+            Console.WriteLine("Hello, World!");
             Console.WriteLine("this is a aot project demo by github actions");
         }
     }
