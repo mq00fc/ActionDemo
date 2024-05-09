@@ -31,11 +31,17 @@ jobs:
       env:
         DOTNET_CLI_TELEMETRY_OPTOUT: 1
 
+    - name: Zip the build output
+      run: |
+        cd out/${{ matrix.runtime }}
+        zip -r ../${{ matrix.runtime }}.zip .
+      shell: bash
+
     - name: Upload Artifacts
       uses: actions/upload-artifact@v3
       with:
         name: ${{ matrix.runtime }}-build
-        path: out/${{ matrix.runtime }}
+        path: out/${{ matrix.runtime }}.zip
 
   release:
     needs: build
@@ -69,9 +75,9 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.MY_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: out/linux-x64/ConsoleApp1
-          asset_name: ConsoleApp1-linux-x64
-          asset_content_type: application/octet-stream
+          asset_path: out/linux-x64.zip
+          asset_name: ConsoleApp1-linux-x64.zip
+          asset_content_type: application/zip
 
       - name: Upload Release Asset for macOS x64
         uses: actions/upload-release-asset@v1
@@ -79,6 +85,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.MY_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: out/osx-x64/ConsoleApp1
-          asset_name: ConsoleApp1-osx-x64
-          asset_content_type: application/octet-stream
+          asset_path: out/osx-x64.zip
+          asset_name: ConsoleApp1-osx-x64.zip
+          asset_content_type: application/zip
