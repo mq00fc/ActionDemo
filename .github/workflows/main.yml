@@ -15,9 +15,6 @@ jobs:
             runtime: linux-x64
           - os: macos-latest
             runtime: osx-x64
-          - os: ubuntu-latest
-            runs-on: ubuntu-20.04-arm64
-            runtime: linux-arm64
           - os: windows-latest
             runtime: win-x64
 
@@ -30,11 +27,6 @@ jobs:
       with:
         dotnet-version: '8.0.x'
         
-    - name: Install dependencies
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y clang lld
-
     - name: Build with AOT
       run: |
         dotnet publish -c Release -r ${{ matrix.runtime }} --self-contained -o out/${{ matrix.runtime }} -p:UseAppHost=true
