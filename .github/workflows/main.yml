@@ -36,17 +36,16 @@ jobs:
         
     - name: Zip the build output
       run: |
-            if (${{ runner.os }} == 'Windows')
-            {
-              Compress-Archive -Path out/${{ matrix.runtime }}/* -DestinationPath out/${{ matrix.runtime }}.zip
-            }
-            else 
-            {
-              cd out/${{ matrix.runtime }}
-              zip -r ../${{ matrix.runtime }}.zip .
-            }
+        if ("${{ runner.os }}" -eq "Windows") {
+          Compress-Archive -Path "out/${{ matrix.runtime }}/*" -DestinationPath "out/${{ matrix.runtime }}.zip"
+        } else {
+          cd "out/${{ matrix.runtime }}"
+          zip -r "../${{ matrix.runtime }}.zip" .
+          ls
+        }
       timeout-minutes: 5
-      shell: bash
+      shell: pwsh
+
       
     - name: Upload
       uses: softprops/action-gh-release@v2
