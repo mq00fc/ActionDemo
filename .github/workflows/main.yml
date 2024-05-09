@@ -4,7 +4,7 @@ on: push
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         include:
@@ -23,6 +23,12 @@ jobs:
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: '8.0.x'
+
+    - name: Install ARM64 toolchain
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y binutils-aarch64-linux-gnu
+      if: matrix.runtime == 'linux-arm64'
 
     - name: Build with AOT
       run: dotnet publish -c Release -r ${{ matrix.runtime }} --self-contained -o out/${{ matrix.runtime }}
