@@ -5,7 +5,7 @@
         static void Main(string[] args)
         {
             Console.WriteLine("Hello, World!");
-            Console.WriteLine("this is a aot project demo by github actions");
+            Console.WriteLine($"this is a aot project demo by github actions {DateTime.Now.ToShortDateString()}");
         }
     }
 }
