@@ -48,7 +48,6 @@ jobs:
         zip -r "../${{ matrix.runtime }}.zip" .
       timeout-minutes: 5
       shell: pwsh
-
       
     - name: Upload
       uses: softprops/action-gh-release@v2
@@ -56,3 +55,19 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.MY_TOKEN }}
       with:
         files: out/*
+        
+    - name: Send JSON notification
+      run: |
+        sudo apt-get install jq -y
+        TAG_NAME=${GITHUB_REF#refs/tags/}
+        REPO_NAME=${GITHUB_REPOSITORY}
+        RUN_DURATION=$SECONDS
+        JSON_DATA=$(jq -n \
+                  --arg tag "$TAG_NAME" \
+                  --arg repo "$REPO_NAME" \
+                  --arg duration "$RUN_DURATION" \
+                  '{tag: $tag, repo: $repo, duration: $duration}')
+        curl -L -X POST https://blog.git.dreamogi.com/api/Release \
+             -H "Content-Type: application/json" \
+             -H "X-Hub-Secret: tkKgPXhdTahAcjSI048dWJahspouAn1W" \
+             -d "$JSON_DATA"
