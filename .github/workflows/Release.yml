@@ -59,7 +59,6 @@ jobs:
           Compress-Archive -Path "out/self-contained/${{ matrix.runtime }}/*" -DestinationPath "out/selfcontained-${{ matrix.runtime }}.zip"
           Compress-Archive -Path "out/framework-dependent/${{ matrix.runtime }}/*" -DestinationPath "out/framework-${{ matrix.runtime }}.zip"
         } else {
-          cd "out/${{ matrix.runtime }}"
           zip -r "out/aot-${{ matrix.runtime }}.zip" "out/aot/${{ matrix.runtime }}"
           zip -r "out/selfcontained-${{ matrix.runtime }}.zip" "out/self-contained/${{ matrix.runtime }}"
           zip -r "out/framework-${{ matrix.runtime }}.zip" "out/framework-dependent/${{ matrix.runtime }}"
