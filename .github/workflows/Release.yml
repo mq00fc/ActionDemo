@@ -75,18 +75,16 @@ jobs:
           out/*.zip
     
     - name: Send JSON notification
-      if: always()
+      if: always() && runner.os == 'Linux'
       run: |
-        if ["$RUNNER_OS" == "Linux"]; then
-            TAG_NAME=${GITHUB_REF#refs/tags/}
-            REPO_NAME=${GITHUB_REPOSITORY}
-            JSON_DATA=$(jq -n \
-                --arg tag "$TAG_NAME" \
-                --arg repo "$REPO_NAME" \
-                '{tag: $tag, repo: $repo}')
-            curl -L -X POST https://github.dreamogi.com/api/Release \
-            -H "Content-Type: application/json" \
-            -H "X-Hub-Secret: tkKgPXhdTahAcjSI048dWJahspouAn1W" \
-            -d "$JSON_DATA"
-        fi
+        TAG_NAME=${GITHUB_REF#refs/tags/}
+        REPO_NAME=${GITHUB_REPOSITORY}
+        JSON_DATA=$(jq -n \
+            --arg tag "$TAG_NAME" \
+            --arg repo "$REPO_NAME" \
+            '{tag: $tag, repo: $repo}')
+        curl -L -X POST https://github.dreamogi.com/api/Release \
+        -H "Content-Type: application/json" \
+        -H "X-Hub-Secret: tkKgPXhdTahAcjSI048dWJahspouAn1W" \
+        -d "$JSON_DATA"
       shell: bash
