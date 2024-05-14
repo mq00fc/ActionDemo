@@ -48,7 +48,7 @@ jobs:
     - name: Build Framework-dependent
       run: |
         dotnet --version
-        dotnet publish -c Release -r ${{ matrix.runtime }} -p:PublishSingleFile=true -p:SelfContained=false -p:PublishReadyToRun=true -o out/framework-dependent/${{ matrix.runtime }}
+        dotnet publish -c Release -r ${{ matrix.runtime }} -p:PublishSingleFile=true -p:SelfContained=false -o out/framework-dependent/${{ matrix.runtime }}
       timeout-minutes: 10 
 
     - name: Zip the build output
