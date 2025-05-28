@@ -21,7 +21,11 @@ jobs:
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: '9.x'
- 
+        
+    - name: Install Tool
+      run: |
+        sudo apt install libc6
+        
     - name: Build AOT
       run: |
         dotnet publish -c Release -r linux-musl-arm64 -p:PublishSingleFile=true -p:SelfContained=true -o out/aot/linux-musl-arm64
