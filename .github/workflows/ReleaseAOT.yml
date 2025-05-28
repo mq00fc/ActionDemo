@@ -24,14 +24,12 @@ jobs:
  
     - name: Build AOT
       run: |
-        dotnet publish -c Release -r linux-musl-arm64 -p:PublishSingleFile=true -p:SelfContained=true -p:PublishReadyToRun=true -o out/aot/linux-musl-arm64
-        dotnet publish -c Release -r linux-musl-arm64 -p:PublishAot=true -o out/aot/linux-musl-aot-arm64
+        dotnet publish -c Release -r linux-musl-arm64 -p:PublishSingleFile=true -p:SelfContained=true -o out/aot/linux-musl-arm64
       timeout-minutes: 10 
 
     - name: Zip the build output
       run: |
         zip -r -j "out/aot-linux-musl-arm64.zip" "out/aot/linux-musl-arm64"
-        zip -r -j "out/aot-linux-musl-aot-arm64.zip" "out/aot/linux-musl-aot-arm64"
       timeout-minutes: 5
       shell: pwsh
       
