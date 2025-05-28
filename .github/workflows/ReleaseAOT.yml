@@ -1,0 +1,42 @@
+name: Release AOT Compilation
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-24.04-arm
+            runtime: linux-arm64
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '9.x'
+ 
+    - name: Build AOT
+      run: |
+        dotnet publish -c Release -r linux-musl-arm64 -p:PublishSingleFile=true -p:SelfContained=false -o out/aot/linux-musl-arm64
+      timeout-minutes: 10 
+
+    - name: Zip the build output
+      run: |
+        zip -r -j "out/aot-linux-musl-arm64.zip" "out/aot/linux-musl-arm64"
+      timeout-minutes: 5
+      shell: pwsh
+      
+    - name: Upload
+      uses: softprops/action-gh-release@v2
+      env:
+        GITHUB_TOKEN: ${{ secrets.MY_TOKEN }}
+      with:
+        files: |
+          out/*.zip
